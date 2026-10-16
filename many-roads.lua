@@ -15,8 +15,25 @@ local function oom_nuke()
     end
 end
 
+-- Returns to many-roads. device_reset() restarts the Lua environment and
+-- runs init.lua again, like ^^i in diii (iii v1.1.2+). Firmware without it
+-- falls back to forcing an out-of-memory reset.
+local function restart()
+    if device_reset then
+        for ch = 1, 16 do
+            midi_cc(123, 0, ch)
+        end
+        device_reset()
+    else
+        oom_nuke()
+    end
+end
+
 function event_grid(x, y, z)
     -- print('x ' .. x .. ' y :' .. y .. ' z :' .. z)
+    if MR and MR.tour_key(x, y, z) then
+        return
+    end
     if not MR or not MR.is_valid(x, y, z) then
         return
     end
@@ -25,6 +42,7 @@ function event_grid(x, y, z)
     MR.load_print(x, y)
     local sel_i = MR.coord_to_index(x, y)
     local n = MR.scripts[sel_i]
+    MR.tour_stop()
     MR = nil
     event_arc = nil
     collectgarbage()
@@ -40,7 +58,8 @@ function event_grid(x, y, z)
             iii = (t - prev <= 0.5) and iii + 1 or 1
             prev = t
             if iii >= 3 then
-                oom_nuke()
+                restart()
+                return
             end
         end
         if script_key then
