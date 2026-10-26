@@ -1,6 +1,7 @@
 MR = {}
 MR.exclude_files = {'many-roads.lua', 'many-roads-data.lua', 'init.lua', 'lib.lua'}
 MR.exclude_prefixes = {'pset_', 'data_', 'd_', 'state_'}
+MR.tour = true -- scroll script names across the grid; false for the plain view
 MR.led_active = 4
 MR.led_tour = 15 -- slot whose name is scrolling
 MR.led_text = 10
@@ -94,7 +95,7 @@ MR.text_cols = function(name)
 end
 
 MR.tour_init = function()
-    if #MR.scripts < 1 then
+    if not MR.tour or #MR.scripts < 1 then
         return
     end
     local last_row = math.floor((#MR.scripts - 1) / MR.grid_size_x) + 1
