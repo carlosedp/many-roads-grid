@@ -6,6 +6,7 @@ MR.led_active = 4
 MR.led_tour = 15 -- slot whose name is scrolling
 MR.led_text = 10
 MR.tour_step = 0.08 -- seconds per column of scrolling
+MR.hold_time = 0.4 -- seconds a slot is held before release shows its name instead of loading
 MR.grid_size_x = grid_size_x()
 MR.grid_size = grid_size_x() * grid_size_y()
 MR.index_to_coord = function(index)
@@ -122,7 +123,7 @@ MR.tour_tick = function()
     end
     MR.tour_pos = MR.tour_pos + 1
     if MR.tour_pos > #MR.tour_cols then
-        MR.tour_show(MR.tour_i + 1)
+        MR.tour_show(MR.held_i or MR.tour_i + 1) -- a held slot repeats its name
     end
     if not MR.text_y then
         return
@@ -147,6 +148,30 @@ MR.tour_key = function(x, y, z)
     return true
 end
 
+-- Holding a slot scrolls its name; a short press loads it on release. Returns
+-- the index of the script to load, if any.
+MR.slot_key = function(x, y, z)
+    local i = MR.coord_to_index(x, y)
+    if MR.scripts[i] == nil then
+        return nil
+    end
+    if z == 1 then
+        MR.held_i, MR.held_t = i, get_time()
+        if MR.tour_metro then
+            MR.tour_show(i)
+        end
+        return nil
+    end
+    if MR.held_i ~= i then
+        return nil
+    end
+    MR.held_i = nil
+    if get_time() - MR.held_t < MR.hold_time then
+        return i
+    end
+    return nil
+end
+
 MR.tour_stop = function()
     if MR.tour_metro then
         metro.free(MR.tour_metro.id)
@@ -159,18 +184,4 @@ end
 MR.load_print = function(x, y)
     local i = MR.coord_to_index(x, y)
     print('loading ' .. i .. ': ' .. MR.scripts[i])
-end
-
-MR.is_valid = function(x, y, z)
-    if z ~= 1 then
-        return false
-    end
-    if #MR.scripts < 1 then
-        return false
-    end
-    local index = MR.coord_to_index(x, y)
-    if MR.scripts[index] ~= nil then
-        return true
-    end
-    return false
 end
