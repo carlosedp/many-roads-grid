@@ -22,7 +22,7 @@ I may add further features in the future.
 
 ## Restart
 
-Do a triple click of the top left key to restart the device and return to many roads. This is done by forcing a OOM error.
+Do a triple click of the top left key to return to many roads. This restarts the Lua environment with `device_reset()` (the same as `^^i` in diii), which runs `init.lua` again. On older firmware without `device_reset()`, it falls back to forcing an out-of-memory error, which makes the device restart.
 
 ## Version history
 - **v1.2.1**: Bugfix release.
