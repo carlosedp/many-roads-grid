@@ -50,7 +50,7 @@ On iii firmware v1.1.2 and later this uses `device_reset()`, which restarts the 
 
 ## Version history
 
-- **v1.2.1-og1**: Script names scroll across the grid in a tour; hold a key to see its name; press the text area to step through scripts; scripts load on key release; restart uses `device_reset()` where available.
+- **v1.2.2**: Script names scroll across the grid in a tour; hold a key to see its name; press the text area to step through scripts; scripts load on key release; restart uses `device_reset()` where available. By [carlosedp](https://github.com/carlosedp).
 - **v1.2.1**: Bugfix release.
 - **v1.2**: Memory optimisations and Restart feature by [Quixotic7](https://github.com/Quixotic7).
 - **v1.1**: Added support for more than 16 scripts.
